@@ -213,13 +213,24 @@ class GetChanges(PerforceRestApiEndpoint):
 
         """
         log.debug("GetChanges called")
-        _ = await request.json()
-
-        result = PerforceBackend.get_changes()
+        content = await request.json()
+        stream = content.get("stream")
+        result = PerforceBackend.get_changes(stream=stream)
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
+        )
+
+
+class GetUncommittedChanges(PerforceRestApiEndpoint):
+    """Returns list of uncomitted changes."""
+
+    async def post(self, request) -> Response:
+        log.debug("GetUncommittedChanges called")
+        content = await request.json()
+
+        result = PerforceBackend.get_uncommitted_changes()
+        return Response(
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
@@ -280,6 +291,30 @@ class ExistsOnServer(PerforceRestApiEndpoint):
             status=200,
             body=self.encode(result),
             content_type="application/json"
+        )
+
+
+class SubmitDefaultChangelist(PerforceRestApiEndpoint):
+    """Returns list of dict with project info (id, name)."""
+
+    async def post(self, request) -> Response:
+        log.debug("SubmitChangelist called")
+        content = await request.json()
+
+        result = PerforceBackend.submit_default_changelist(content["comment"])
+        return Response(
+            status=200, body=self.encode(result), content_type="application/json"
+        )
+
+
+class Revert(PerforceRestApiEndpoint):
+    async def post(self, request) -> Response:
+        log.debug("Revert called")
+        content = await request.json()
+
+        result = PerforceBackend.revert(content["path"])
+        return Response(
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
