@@ -1,4 +1,5 @@
 """Changes viewer model."""
+
 from __future__ import annotations
 
 from datetime import datetime
@@ -19,6 +20,7 @@ TZ_INFO = datetime.now().astimezone().tzinfo
 
 class ChangesModel(QtGui.QStandardItemModel):
     """Model for the change viewer."""
+
     column_labels: ClassVar[list[str]] = [
         "Change",
         "Description",
@@ -45,6 +47,9 @@ class ChangesModel(QtGui.QStandardItemModel):
         self.removeRows(0, self.rowCount())  # Clear existing data
         changes = self._controller.get_changes()
 
+        if not changes:
+            return
+
         for change in changes:
             date_time = datetime.fromtimestamp(int(change["time"]), tz=TZ_INFO)
             date_string = date_time.strftime("%Y%m%dT%H%M%SZ")
@@ -57,8 +62,8 @@ class ChangesModel(QtGui.QStandardItemModel):
             date_item = QtGui.QStandardItem(date_string)
             self.appendRow([number_item, desc_item, author_item, date_item])
 
-    def data(self, index: QtCore.QModelIndex,
-             role: Optional[int] = QtGui.Qt.DisplayRole
+    def data(
+        self, index: QtCore.QModelIndex, role: Optional[int] = QtGui.Qt.DisplayRole
     ) -> Any:  # noqa: ANN401
         """Return data for the index.
 
@@ -85,9 +90,8 @@ class CustomSortProxyModel(QtCore.QSortFilterProxyModel):
     """Custom sort proxy model."""
 
     def lessThan(  # noqa: N802
-            self,
-            source_left: QtCore.QModelIndex,
-            source_right: QtCore.QModelIndex) -> bool:
+        self, source_left: QtCore.QModelIndex, source_right: QtCore.QModelIndex
+    ) -> bool:
         """Compare two items.
 
         Returns true if the value of the item referred to by the given
