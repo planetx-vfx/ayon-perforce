@@ -122,20 +122,4 @@ class PerforceSettings(BaseSettingsModel):
     )
 
 
-DEFAULT_VALUES = {
-  "port": 1666,
-  "workspace": {
-    "depot": "{project[code]}",
-    "template": "{workstation[hostname]}_{workstation[system_name]}_{project[code]}"  # noqa: E501
-  },
-  "stream": {
-    "enabled": False,
-    "profiles": []
-  },
-  "publish": {
-    "CollectPerforceControl": {
-      "enabled": False,
-      "profiles": []
-    }
-  }
-}
+DEFAULT_VALUES = {}
