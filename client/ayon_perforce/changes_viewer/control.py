@@ -1,4 +1,5 @@
 """Changes Viewer Controller."""
+
 from __future__ import annotations
 
 from dataclasses import asdict
@@ -22,8 +23,7 @@ class ChangesViewerController:
     Goal of this controller is to provide a way to get current context.
     """
 
-    def __init__(
-            self, launch_data: LaunchData, host: Optional[HostBase] = None):
+    def __init__(self, launch_data: LaunchData, host: Optional[HostBase] = None):
         """Initialize ChangesViewerController."""
         if host is None:
             host = registered_host()
@@ -36,27 +36,24 @@ class ChangesViewerController:
         self._perforce_addon: PerforceAddon = perforce_addon
         self.enabled = perforce_addon and perforce_addon.enabled
 
-        self._conn_info: ConnectionInfo = (
-            self._perforce_addon.get_connection_info(
-                project_name=launch_data.project_name,
-                task_entity=launch_data.task_entity,
-                folder_entity=launch_data.folder_entity,
-                folder_path=launch_data.folder_path,
-            ))
+        self._conn_info: ConnectionInfo = self._perforce_addon.get_connection_info(
+            project_name=launch_data.project_name,
+            task_entity=launch_data.task_entity,
+            folder_entity=launch_data.folder_entity,
+            folder_path=launch_data.folder_path,
+        )
 
         self._event_system = self._create_event_system()
 
     def emit_event(
-            self, topic: str,
-            data: Optional[dict] = None,
-            source: Optional[str] = None) -> None:
+        self, topic: str, data: Optional[dict] = None, source: Optional[str] = None
+    ) -> None:
         """Emit event."""
         if data is None:
             data = {}
         self._event_system.emit(topic, data, source)
 
-    def register_event_callback(
-            self, topic: str, callback: Callable) -> None:
+    def register_event_callback(self, topic: str, callback: Callable) -> None:
         """Register event callback."""
         self._event_system.add_callback(topic, callback)
 
@@ -73,8 +70,7 @@ class ChangesViewerController:
             msg = "Missing Perforce connection information."
             raise RuntimeError(msg)
 
-        PerforceRestStub.login(**asdict(self._conn_info)
-        )
+        PerforceRestStub.login(**asdict(self._conn_info))
 
     @staticmethod
     def get_changes() -> list[dict]:
@@ -104,9 +100,9 @@ class ChangesViewerController:
         self.login()
         PerforceRestStub.login(**asdict(self._conn_info))
         workspace_dir = PerforceRestStub.get_workspace_dir(
-            self._conn_info.workspace_name)
-        PerforceRestStub.sync_to_version(
-            f"{workspace_dir}/...", change_id)
+            self._conn_info.workspace_name
+        )
+        PerforceRestStub.sync_to_version(f"{workspace_dir}/...", change_id)
 
     def get_current_project_name(self) -> str:
         """Get current project name.
