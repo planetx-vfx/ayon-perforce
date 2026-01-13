@@ -1,4 +1,5 @@
 """Perforce Addon for AYON."""
+
 from __future__ import annotations
 
 import os
@@ -22,6 +23,7 @@ PERFORCE_ADDON_DIR = os.path.dirname(os.path.abspath(__file__))
 @dataclass
 class ConnectionInfo:
     """Connection information for Perforce."""
+
     host: str
     port: int
     username: str
@@ -32,6 +34,7 @@ class ConnectionInfo:
 @dataclass
 class LaunchData:
     """Current context data."""
+
     project_name: str
     folder_entity: dict[str, Any]
     task_entity: dict[str, Any]
@@ -53,7 +56,11 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
         """Initialize the addon."""
         self.settings: dict[str, Any] = settings.get(self.name)
         self.enabled: bool = self.settings and self.settings["enabled"]
-        self.set_service_running_icon() if self.enabled else self.set_service_failed_icon()  # noqa: E501
+        (
+            self.set_service_running_icon()
+            if self.enabled
+            else self.set_service_failed_icon()
+        )  # noqa: E501
 
     def get_connection_info(
         self,
@@ -102,7 +109,7 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
             port=settings["port"],
             username=username,
             password=password,
-            workspace_name=ws_name
+            workspace_name=ws_name,
         )
 
     def get_server_url(self, project_settings: Optional[dict] = None) -> str:
@@ -118,8 +125,7 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
         return f"{self.settings['host_name']}:{self.settings['port']}"
 
     @staticmethod
-    def sync_to_version(
-            conn_info: ConnectionInfo, change_id: int) -> None:
+    def sync_to_version(conn_info: ConnectionInfo, change_id: int) -> None:
         """Sync to a specific version in Perforce.
 
         Args:
@@ -131,10 +137,8 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
 
         PerforceRestStub.login(**asdict(conn_info))
 
-        workspace_dir = PerforceRestStub.get_workspace_dir(
-            conn_info.workspace_name)
-        PerforceRestStub.sync_to_version(
-            f"{workspace_dir}/...", change_id)
+        workspace_dir = PerforceRestStub.get_workspace_dir(conn_info.workspace_name)
+        PerforceRestStub.sync_to_version(f"{workspace_dir}/...", change_id)
 
     def tray_init(self) -> None:
         """Called when the tray is initializing."""
@@ -154,14 +158,14 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
 
     def tray_exit(self) -> None:
         """Called when the tray is exiting."""
-        if self.enabled and \
-                self.webserver and self.webserver.server_is_running:
+        if self.enabled and self.webserver and self.webserver.server_is_running:
             self.webserver.stop()
 
     def tray_start(self) -> None:
         """Called when the tray is starting."""
         if self.enabled:
             from ayon_perforce.backend.communication_server import WebServer
+
             self.webserver = WebServer()
             self.webserver.start()
 
@@ -176,8 +180,7 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
             self.login_tray.tray_menu(tray_menu)
 
     # PLR6301: This method is defined by the interface
-    def get_create_plugin_paths(  # noqa: PLR6301
-            self, host_name: str) -> list[str]:
+    def get_create_plugin_paths(self, host_name: str) -> list[str]:  # noqa: PLR6301
         """Get paths to create plugins.
 
         This adds host-specific paths based on runtime context.
@@ -193,8 +196,7 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
             return []
         return [f"{PERFORCE_ADDON_DIR}/plugins/create/unreal"]
 
-    def get_publish_plugin_paths(  # noqa: PLR6301
-            self, host_name: str) -> list[str]:
+    def get_publish_plugin_paths(self, host_name: str) -> list[str]:  # noqa: PLR6301
         """Get paths to publish plugins.
 
         Args:
@@ -204,9 +206,7 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
             list[str]: List of paths to publish plugins.
 
         """
-        return [
-            (Path(PERFORCE_ADDON_DIR) / "plugins" / "publish").as_posix()
-        ]
+        return [(Path(PERFORCE_ADDON_DIR) / "plugins" / "publish").as_posix()]
 
     def get_launch_hook_paths(self, _app: str) -> str:  # noqa: PLR6301
         """Implementation for applications launch hooks.
@@ -218,8 +218,7 @@ class PerforceAddon(AYONAddon, ITrayService, IPluginPaths):
         return (Path(PERFORCE_ADDON_DIR) / "launch_hooks").as_posix()
 
 
-def is_perforce_enabled(
-        project_settings: dict[str, Any]) -> bool:
+def is_perforce_enabled(project_settings: dict[str, Any]) -> bool:
     """Check if Perforce is enabled for the project.
 
     Args:
