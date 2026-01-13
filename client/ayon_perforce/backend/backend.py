@@ -1,4 +1,5 @@
 """Perforce backend."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional, Tuple, Union
@@ -11,11 +12,10 @@ if TYPE_CHECKING:
 
 class PerforceBackend:  # noqa: PLR0904
     """Perforce backend."""
+
     # Public Properties:
     @staticmethod
-    def get_server_version(
-        path: Union[str, Path]
-    ) -> Union[int, dict[str, int], None]:
+    def get_server_version(path: Union[str, Path]) -> Union[int, dict[str, int], None]:
         """Get the revision from the server of the given path.
 
         Args:
@@ -41,7 +41,7 @@ class PerforceBackend:  # noqa: PLR0904
 
     @staticmethod
     def get_version_info(
-        path: Union[str, Path]
+        path: Union[str, Path],
     ) -> Tuple[Union[int, None], Union[int, None]]:
         """Get version information of the given path.
 
@@ -77,9 +77,7 @@ class PerforceBackend:  # noqa: PLR0904
 
     @staticmethod
     def checked_out_by(
-        path: Union[str, Path],
-        *,
-        other_users_only: bool = False
+        path: Union[str, Path], *, other_users_only: bool = False
     ) -> Optional[list[str]]:
         """Get the user who checked out the file.
 
@@ -110,10 +108,7 @@ class PerforceBackend:  # noqa: PLR0904
         return api.get_latest(path)
 
     @staticmethod
-    def sync_to_version(
-        path: Union[str, Path],
-        version: int
-    ) -> bool:
+    def sync_to_version(path: Union[str, Path], version: int) -> bool:
         """Sync the given path to the specified version.
 
         Returns:
@@ -133,10 +128,7 @@ class PerforceBackend:  # noqa: PLR0904
         return api.add(path, change_description=comment)
 
     @staticmethod
-    def add_to_change_list(
-        path: Union[str, Path],
-        comment: str
-    ) -> bool:
+    def add_to_change_list(path: Union[str, Path], comment: str) -> bool:
         """Add the given path to the changelist with a comment.
 
         Returns:
@@ -146,10 +138,7 @@ class PerforceBackend:  # noqa: PLR0904
         return api.add_to_change_list(path, comment)
 
     @staticmethod
-    def checkout(
-        path: Union[str, Path],
-        comment: str
-    ) -> bool:
+    def checkout(path: Union[str, Path], comment: str) -> bool:
         """Checkout the given path.
 
         Returns:
@@ -172,7 +161,7 @@ class PerforceBackend:  # noqa: PLR0904
     def move(
         path: Union[str, Path],
         new_path: Union[str, Path],
-        change_description: Optional[str] = None
+        change_description: Optional[str] = None,
     ) -> bool:
         """Move the given path to the new path.
 
@@ -232,7 +221,7 @@ class PerforceBackend:  # noqa: PLR0904
     def get_files_in_folder_in_date_order(
         path: Union[str, Path],
         name_pattern: Optional[str] = None,
-        extensions: Optional[list[str]] = None
+        extensions: Optional[list[str]] = None,
     ) -> tuple:
         """Get the files in the folder in date order.
 
@@ -241,16 +230,18 @@ class PerforceBackend:  # noqa: PLR0904
 
         """
         return tuple(
-                data.path for data in api.get_files_in_folder_in_date_order(
-                    path, name_pattern=name_pattern, extensions=extensions
-                ) or []
+            data.path
+            for data in api.get_files_in_folder_in_date_order(
+                path, name_pattern=name_pattern, extensions=extensions
+            )
+            or []
         )
 
     @staticmethod
     def get_newest_file_in_folder(
         path: Union[str, Path],
         name_pattern: Optional[str] = None,
-        extensions: Optional[list[str]] = None
+        extensions: Optional[list[str]] = None,
     ) -> Optional[Path]:
         """Get the newest file in the folder.
 
@@ -288,8 +279,7 @@ class PerforceBackend:  # noqa: PLR0904
         return api.submit_default_changelist(comment)
 
     @staticmethod
-    def update_change_list_description(
-            comment: str, new_comment: str) -> bool:
+    def update_change_list_description(comment: str, new_comment: str) -> bool:
         """Update the change list description.
 
         Returns:
