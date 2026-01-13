@@ -1,4 +1,5 @@
 """Rest routes for Perforce backend."""
+
 from __future__ import annotations
 
 import datetime
@@ -17,6 +18,7 @@ log = Logger.get_logger("P4routes")
 
 class PerforceRestApiEndpoint(RestApiEndpoint):
     """Base class for Perforce Rest API endpoints."""
+
     def __init__(self):
         """Init."""
         super().__init__()
@@ -46,15 +48,12 @@ class PerforceRestApiEndpoint(RestApiEndpoint):
             bytes: Encoded JSON data.
 
         """
-        return json.dumps(
-            data,
-            indent=4,
-            default=cls.json_dump_handler
-        ).encode("utf-8")
+        return json.dumps(data, indent=4, default=cls.json_dump_handler).encode("utf-8")
 
 
 class LoginEndpoint(PerforceRestApiEndpoint):
     """Returns list of workspaces."""
+
     async def post(self, request: Request) -> Response:
         """Login to Perforce server.
 
@@ -68,17 +67,16 @@ class LoginEndpoint(PerforceRestApiEndpoint):
             content["port"],
             content["username"],
             content["password"],
-            content["workspace_name"]
+            content["workspace_name"],
         )
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class IsPathInAnyWorkspace(PerforceRestApiEndpoint):
     """Returns list of workspaces."""
+
     async def post(self, request: Request) -> Response:
         """Login to Perforce server.
 
@@ -89,14 +87,13 @@ class IsPathInAnyWorkspace(PerforceRestApiEndpoint):
         content = await request.json()
         result = api.is_path_under_any_root(content["path"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class AddEndpoint(PerforceRestApiEndpoint):
     """Returns list of dict with project info (id, name)."""
+
     async def post(self, request: Request) -> Response:
         """Add file to Perforce.
 
@@ -107,17 +104,15 @@ class AddEndpoint(PerforceRestApiEndpoint):
         log.debug("AddEndpoint called")
         content = await request.json()
 
-        result = PerforceBackend.add(content["path"],
-                                            content["comment"])
+        result = PerforceBackend.add(content["path"], content["comment"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class SyncLatestEndpoint(PerforceRestApiEndpoint):
     """Returns list of dict with project info (id, name)."""
+
     async def post(self, request: Request) -> Response:
         """Sync latest version of file.
 
@@ -130,14 +125,13 @@ class SyncLatestEndpoint(PerforceRestApiEndpoint):
 
         result = PerforceBackend.sync_latest_version(content["path"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class SyncVersionEndpoint(PerforceRestApiEndpoint):
     """Returns list of dict with project info (id, name)."""
+
     async def post(self, request: Request) -> Response:
         """Sync to specific version of file.
 
@@ -148,20 +142,17 @@ class SyncVersionEndpoint(PerforceRestApiEndpoint):
         log.debug("SyncVersionEndpoint called")
         content = await request.json()
 
-        log.debug(
-            "Syncing '%s' to %s", content["path"], content["version"])
-        result = PerforceBackend.sync_to_version(
-            content["path"], content["version"])
+        log.debug("Syncing '%s' to %s", content["path"], content["version"])
+        result = PerforceBackend.sync_to_version(content["path"], content["version"])
         log.debug("Synced")
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class CheckoutEndpoint(PerforceRestApiEndpoint):
     """Returns list of dict with project info (id, name)."""
+
     async def post(self, request: Request) -> Response:
         """Checkout file.
 
@@ -173,17 +164,15 @@ class CheckoutEndpoint(PerforceRestApiEndpoint):
 
         content = await request.json()
 
-        result = PerforceBackend.checkout(content["path"],
-                                                 content["comment"])
+        result = PerforceBackend.checkout(content["path"], content["comment"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class IsCheckoutedEndpoint(PerforceRestApiEndpoint):
     """Checks if file is checkouted by sameone."""
+
     async def post(self, request: Request) -> Response:
         """Check if file is checked out.
 
@@ -197,14 +186,13 @@ class IsCheckoutedEndpoint(PerforceRestApiEndpoint):
 
         result = PerforceBackend.is_checkedout(content["path"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class GetChanges(PerforceRestApiEndpoint):
     """Returns list of submitted changes."""
+
     async def post(self, request: Request) -> Response:
         """Get list of changes.
 
@@ -236,6 +224,7 @@ class GetUncommittedChanges(PerforceRestApiEndpoint):
 
 class GetLastChangelist(PerforceRestApiEndpoint):
     """Returns the latest change list."""
+
     async def post(self, request: Request) -> Response:
         """Get the latest changelist.
 
@@ -248,14 +237,13 @@ class GetLastChangelist(PerforceRestApiEndpoint):
 
         result = PerforceBackend.get_last_change_list()
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class SubmitChangelist(PerforceRestApiEndpoint):
     """Submit changelist."""
+
     async def post(self, request: Request) -> Response:
         """Submit changelist.
 
@@ -268,14 +256,13 @@ class SubmitChangelist(PerforceRestApiEndpoint):
 
         result = PerforceBackend.submit_change_list(content["comment"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class ExistsOnServer(PerforceRestApiEndpoint):
     """Returns information about file on 'path'."""
+
     async def post(self, request: Request) -> Response:
         """Check if file exists on server.
 
@@ -288,9 +275,7 @@ class ExistsOnServer(PerforceRestApiEndpoint):
 
         result = PerforceBackend.exists_on_server(content["path"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
@@ -320,6 +305,7 @@ class Revert(PerforceRestApiEndpoint):
 
 class GetServerVersionEndpoint(PerforceRestApiEndpoint):
     """Returns the version on the server."""
+
     async def get(self) -> Response:
         """Get server version.
 
@@ -329,14 +315,13 @@ class GetServerVersionEndpoint(PerforceRestApiEndpoint):
         """
         result = PerforceBackend.get_server_version()
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class GetStreamEndpoint(PerforceRestApiEndpoint):
     """Returns stream attached to workspace."""
+
     async def post(self, request: Request) -> Response:
         """Get stream attached to workspace.
 
@@ -348,14 +333,13 @@ class GetStreamEndpoint(PerforceRestApiEndpoint):
 
         result = PerforceBackend.get_stream(content["workspace_name"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )
 
 
 class GetWorkspaceDirEndpoint(PerforceRestApiEndpoint):
     """Returns stream attached to workspace."""
+
     async def post(self, request: Request) -> Response:
         """Get workspace directory.
 
@@ -365,11 +349,7 @@ class GetWorkspaceDirEndpoint(PerforceRestApiEndpoint):
         """
         content = await request.json()
 
-        result = PerforceBackend.get_workspace_dir(
-            content["workspace_name"]
-        )
+        result = PerforceBackend.get_workspace_dir(content["workspace_name"])
         return Response(
-            status=200,
-            body=self.encode(result),
-            content_type="application/json"
+            status=200, body=self.encode(result), content_type="application/json"
         )

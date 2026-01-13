@@ -1,4 +1,5 @@
 """REST API routes."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -30,8 +31,7 @@ class PerforceModuleRestAPI:
     def register(self) -> None:
         """Register all REST API routes."""
         login = rest_routes.LoginEndpoint()
-        self.server_manager.add_route(
-            "POST", f"{self.prefix}/login", login.dispatch)
+        self.server_manager.add_route("POST", f"{self.prefix}/login", login.dispatch)
 
         is_in_any_workspace = rest_routes.IsPathInAnyWorkspace()
         self.server_manager.add_route(
@@ -41,8 +41,7 @@ class PerforceModuleRestAPI:
         )
 
         add_file = rest_routes.AddEndpoint()
-        self.server_manager.add_route(
-            "POST", f"{self.prefix}/add", add_file.dispatch)
+        self.server_manager.add_route("POST", f"{self.prefix}/add", add_file.dispatch)
 
         sync_latest_version = rest_routes.SyncLatestEndpoint()
         self.server_manager.add_route(
@@ -103,9 +102,7 @@ class PerforceModuleRestAPI:
 
         exists_on_server = rest_routes.ExistsOnServer()
         self.server_manager.add_route(
-            "POST",
-            f"{self.prefix}/exists_on_server",
-            exists_on_server.dispatch
+            "POST", f"{self.prefix}/exists_on_server", exists_on_server.dispatch
         )
 
         get_stream = rest_routes.GetStreamEndpoint()
@@ -115,7 +112,5 @@ class PerforceModuleRestAPI:
 
         get_workspace_dir = rest_routes.GetWorkspaceDirEndpoint()
         self.server_manager.add_route(
-            "POST",
-            f"{self.prefix}/get_workspace_dir",
-            get_workspace_dir.dispatch
+            "POST", f"{self.prefix}/get_workspace_dir", get_workspace_dir.dispatch
         )
