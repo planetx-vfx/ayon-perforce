@@ -1,13 +1,12 @@
 """Main settings."""
-from ayon_server.settings import (
-    BaseSettingsModel,
-    task_types_enum,
-)
+
+from ayon_server.settings import BaseSettingsModel, SettingsField, task_types_enum
 from pydantic import Field
 
 
 class CollectPerforceProfileModel(BaseSettingsModel):
     """Collect Perforce profile settings."""
+
     _layout = "expanded"
     host_names: list[str] = Field(
         default_factory=list,
@@ -32,89 +31,71 @@ class CollectPerforceProfileModel(BaseSettingsModel):
     template_name: str = Field(
         "",
         title="Template name",
-        description="Name from Anatomy to provide path and name of "
-                    "committed file")
+        description="Name from Anatomy to provide path and name of " "committed file",
+    )
 
 
 class CollectPerforceControlModel(BaseSettingsModel):
     """Collect Perforce Control settings."""
+
     _isGroup = True  # noqa: N815
     enabled: bool = False
     profiles: list[CollectPerforceProfileModel] = Field(
         default_factory=list,
         title="Profiles to trigger Perforce commit",
         description="Provide profile in which context representation should be"
-         " tracked outside of AYON with Perforce commit"
+        " tracked outside of AYON with Perforce commit",
     )
 
 
 class PublishPluginsModel(BaseSettingsModel):
     """Publish plugins settings."""
+
     CollectPerforceControl: CollectPerforceControlModel = Field(
         default_factory=CollectPerforceControlModel,
         title="Collect Perforce Control",
         description=(
             "Configure which published products should be committed to P4. "
             "Keep disabled if published files should be versioned only in AYON"
-        )
+        ),
     )
 
 
 class StreamProfile(BaseSettingsModel):
     """Stream profile settings."""
-    template: str = Field(
-        default="",
-        title="Stream Name Template"
-    )
-    task_types: list[str] = Field(
-        enum_resolver=task_types_enum,
-        title="Task Type"
-    )
+
+    template: str = Field(default="", title="Stream Name Template")
+    task_types: list[str] = Field(enum_resolver=task_types_enum, title="Task Type")
 
 
 class StreamModel(BaseSettingsModel):
     """Stream settings."""
+
     enabled: bool = Field(default=False)
-    profiles: list[StreamProfile] = Field(
-        default_factory=list,
-        title="Stream Profiles"
-    )
+    profiles: list[StreamProfile] = Field(default_factory=list, title="Stream Profiles")
 
 
 class WorkspaceModel(BaseSettingsModel):
     """Workspace settings."""
 
-    depot: str = Field(
-        "",
-        title="Depot Name Template"
-    )
-    template: str = Field(
-        "",
-        title="Workspace Name Template"
-    )
+    depot: str = Field("", title="Depot Name Template")
+    template: str = Field("", title="Workspace Name Template")
 
 
 class PerforceSettings(BaseSettingsModel):
     """Version Control Project Settings."""
 
     enabled: bool = Field(default=False)
-    host_name: str = Field(
-        "perforce",
-        title="Host name"
-    )
-    port: int = Field(
-        1666,
-        title="Port"
-    )
+    host_name: str = Field("perforce", title="Host name")
+    port: int = Field(1666, title="Port")
 
     workspace: WorkspaceModel = Field(
-        default_factory=WorkspaceModel,
-        title="Workspace Settings"
+        default_factory=WorkspaceModel, title="Workspace Settings"
     )
     stream: StreamModel = Field(
         default_factory=StreamModel,
         title="Stream Settings",
-        description="WIP: enable to use streams in p4"
+        description="WIP: enable to use streams in p4",
     )
     publish: PublishPluginsModel = Field(
         default_factory=PublishPluginsModel,
