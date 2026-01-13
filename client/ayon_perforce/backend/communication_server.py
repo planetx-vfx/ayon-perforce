@@ -1,4 +1,5 @@
 """Websocket server for communication with Perforce module."""
+
 from __future__ import annotations
 
 import asyncio
@@ -41,8 +42,9 @@ class WebServer:
         """Returns True if server is running."""
         return self.websocket_thread.server_is_running
 
-    def add_route(self, *args: Union[str, Request],
-                  **kwargs: Union[str, Request, None]) -> None:
+    def add_route(
+        self, *args: Union[str, Request], **kwargs: Union[str, Request, None]
+    ) -> None:
         """Adds route to the server."""
         self.app.router.add_route(*args, **kwargs)
 
@@ -54,9 +56,7 @@ class WebServer:
             int: free port
 
         """
-        with closing(
-            socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        ) as sock:
+        with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
             sock.bind(("", 0))
             sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             return sock.getsockname()[1]
@@ -76,8 +76,7 @@ class WebServer:
                 self.websocket_thread.stop()
         except Exception:  # noqa: BLE001
             log.warning(
-                "Error has happened during Killing websocket server",
-                exc_info=True
+                "Error has happened during Killing websocket server", exc_info=True
             )
 
 
@@ -92,8 +91,7 @@ class WebServerThread(threading.Thread):
     runner: web.AppRunner
     site: web.TCPSite
 
-    def __init__(self,
-                 webserver: WebServer, port: int, loop: AbstractEventLoop):
+    def __init__(self, webserver: WebServer, port: int, loop: AbstractEventLoop):
         """Initializes WebServerThread."""
         super().__init__()
         self.is_running = False
@@ -110,9 +108,7 @@ class WebServerThread(threading.Thread):
         try:
             self._run_webserver_loop()
         except Exception:  # noqa: BLE001
-            log.warning(
-                "Websocket Server service has failed", exc_info=True
-            )
+            log.warning("Websocket Server service has failed", exc_info=True)
         finally:
             self.server_is_running = False
             # optional
@@ -127,9 +123,7 @@ class WebServerThread(threading.Thread):
         self.loop.run_until_complete(self.start_server())
 
         webserver_url = f"http://localhost:{self.port}"
-        log.info(
-            "Running Websocket server on URL: %s", webserver_url
-        )
+        log.info("Running Websocket server on URL: %s", webserver_url)
         os.environ["PERFORCE_WEBSERVER_URL"] = webserver_url
 
         task = asyncio.ensure_future(self.check_shutdown(), loop=self.loop)
@@ -176,14 +170,11 @@ class WebServerThread(threading.Thread):
         await self.runner.cleanup()
         log.debug("# Server runner stopped")
         tasks = [
-            task for task in asyncio.all_tasks()
-            if task is not asyncio.current_task()
+            task for task in asyncio.all_tasks() if task is not asyncio.current_task()
         ]
         [task.cancel() for task in tasks]  # cancel all the tasks
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        log.debug(
-            "Finished awaiting cancelled tasks, results: %s...",
-            results)
+        log.debug("Finished awaiting cancelled tasks, results: %s...", results)
         await self.loop.shutdown_asyncgens()
         # to really make sure everything else has time to stop
         await asyncio.sleep(0.07)
